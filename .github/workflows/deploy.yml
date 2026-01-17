@@ -68,6 +68,13 @@ jobs:
           echo "Stopping old container..."
           docker rm -f backend-drive || true
 
+          # Clean up any container using port 4002
+          CONFLICT_ID=$(docker ps -q --filter "publish=4002")
+          if [ ! -z "$CONFLICT_ID" ]; then
+            echo "Stopping conflicting container $CONFLICT_ID on port 4002..."
+            docker rm -f $CONFLICT_ID
+          fi
+
           echo "Starting new container..."
           docker run -d \
             --name backend-drive \
