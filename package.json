@@ -4,7 +4,9 @@
     "dev": "bun run --hot src/index.ts",
     "start": "bun run dist/index.js",
     "build": "bun run build.ts",
-    "compile": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server ./src/index.ts"
+    "compile": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server ./src/index.ts",
+    "db:migrate": "bunx --bun prisma migrate deploy",
+    "db:generate": "bunx --bun prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

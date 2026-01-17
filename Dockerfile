@@ -6,9 +6,9 @@ COPY package.json bun.lock ./
 
 RUN bun install
 
-RUN bunx --bun prisma generate
+RUN bun run db:generate
 
-RUN bunx --bun prisma migrate deploy
+RUN bun run db:migrate
 
 COPY . .
 
