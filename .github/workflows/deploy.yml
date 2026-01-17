@@ -72,8 +72,8 @@ jobs:
           docker run -d \
             --name backend-drive \
             --restart always \
-            -p 4000:4000 \
-            -e PORT=4000 \
+            -p 4002:4002 \
+            -e PORT=4002 \
             -e NODE_ENV=prod \
             -e APP_ENV=production \
             -e DEBUG_LOGS=true \
