@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun run dist/index.js",
-    "build": "bun run build.ts"
+    "build": "bun run build.ts",
+    "compile": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server ./src/index.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

@@ -1,0 +1,93 @@
+name: Deploy backend-drive
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and Export Docker Image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag backend-drive:latest \
+            --cache-from type=local,src=/tmp/.buildx-cache \
+            --cache-to type=local,dest=/tmp/.buildx-cache-new \
+            --load \
+            --build-arg DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            --build-arg NODE_ENV=prod \
+            .
+
+          # Update cache
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Save Docker Image to TAR
+        run: |
+          docker save backend-drive:latest | gzip > backend-drive.tar.gz
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy image to server
+        run: |
+          scp -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
+            backend-drive.tar.gz \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/backend-drive.tar.gz
+
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} '
+          set -e
+          echo "Loading docker image..."
+          docker load -i /tmp/backend-drive.tar.gz
+
+          echo "Stopping old container..."
+          docker rm -f backend-drive || true
+
+          echo "Starting new container..."
+          docker run -d \
+            --name backend-drive \
+            --restart always \
+            -p 4000:4000 \
+            -e PORT=4000 \
+            -e NODE_ENV=prod \
+            -e APP_ENV=production \
+            -e DEBUG_LOGS=true \
+            -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            -e DISCORD_BOT_TOKEN="${{ secrets.DISCORD_BOT_TOKEN }}" \
+            -e DISCORD_CHANNEL_ID="${{ secrets.DISCORD_CHANNEL_ID }}" \
+            -e ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" \
+            -e ALLOWED_ORIGIN="${{ secrets.ALLOWED_ORIGIN }}" \
+            backend-drive:latest 
+
+            echo "Integrating with kong-net"
+            docker network connect kong-net backend-drive
+
+          echo "Deployment complete!"
+          rm -f /tmp/backend-drive.tar.gz
+          '
