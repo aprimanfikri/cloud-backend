@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run dist/index.js",
+    "build": "bun run build.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.3",
+    "hono": "^4.11.4",
+    "hono-rate-limiter": "^0.5.3",
+    "pg": "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.16.0",
+    "bun-plugin-dts": "^0.3.0",
+    "prisma": "^7.2.0",
+    "tsx": "^4.21.0"
+  }
+}

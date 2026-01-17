@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /* ====== Output Target ====== */
+    "target": "es2024",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    /* ====== Bun + Hono + React JSX ====== */
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+
+    /* ====== Import / Module Interop ====== */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+
+    /* ====== Project Structure ====== */
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    },
+
+    /* ====== TypeScript Strict Mode ====== */
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* ====== Bun Environment ====== */
+    "types": ["bun"]
+  },
+  "include": ["src"]
+}
