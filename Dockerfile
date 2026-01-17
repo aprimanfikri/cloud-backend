@@ -23,7 +23,7 @@ COPY --from=builder /app/package.json ./
 
 COPY --from=builder /app/server server
 
-EXPOSE 4000
+EXPOSE 4002
 
 # Run migrations before starting the server
 CMD ["/bin/sh", "-c", "bun run db:migrate && ./server"]
