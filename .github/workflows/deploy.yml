@@ -35,7 +35,6 @@ jobs:
             --cache-from type=local,src=/tmp/.buildx-cache \
             --cache-to type=local,dest=/tmp/.buildx-cache-new \
             --load \
-            --build-arg DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             --build-arg NODE_ENV=prod \
             .
 
