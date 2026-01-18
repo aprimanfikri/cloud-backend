@@ -6,7 +6,7 @@ import { config } from "@/config/env";
 import { ContextWithPrisma } from "@/types";
 import { filesRoute } from "@/routes/files";
 import { uploadRoute } from "@/routes/upload";
-import { rateLimiter } from "hono-rate-limiter";
+// import { rateLimiter } from "hono-rate-limiter";
 import { downloadRoute } from "@/routes/download";
 import { secureHeaders } from "hono/secure-headers";
 
@@ -35,25 +35,25 @@ app.use(
   }),
 );
 
-const globalLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000,
-  limit: 100,
-  keyGenerator: (c) => c.req.header("x-forwarded-for") ?? "",
-});
+// const globalLimiter = rateLimiter({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   limit: 100,
+//   keyGenerator: (c) => c.req.header("x-forwarded-for") ?? "",
+// });
 
-const sensitiveLimiter = rateLimiter({
-  windowMs: 60 * 60 * 1000,
-  limit: 50,
-  keyGenerator: (c) => c.req.header("x-forwarded-for") ?? "",
-});
+// const sensitiveLimiter = rateLimiter({
+//   windowMs: 60 * 60 * 1000, // 1 hour
+//   limit: 50,
+//   keyGenerator: (c) => c.req.header("x-forwarded-for") ?? "",
+// });
 
-app.use(globalLimiter);
+// app.use(globalLimiter);
 
-app.use("/upload/finalize", sensitiveLimiter);
-app.use("/upload/cancel", sensitiveLimiter);
+// app.use("/upload/finalize", sensitiveLimiter);
+// app.use("/upload/cancel", sensitiveLimiter);
 app.route("/upload", uploadRoute);
 
-app.use("/files/folder", sensitiveLimiter);
+// app.use("/files/folder", sensitiveLimiter);
 app.route("/files", filesRoute);
 app.route("/download", downloadRoute);
 
